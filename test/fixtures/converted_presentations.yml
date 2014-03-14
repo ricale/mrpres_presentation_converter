@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  presentation_id: 1
+  file_name: MyString
+  pages: 1
+
+two:
+  presentation_id: 1
+  file_name: MyString
+  pages: 1
