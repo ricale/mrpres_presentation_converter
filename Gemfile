@@ -34,6 +34,9 @@ end
 
 gem 'docsplit'
 
+gem 'passenger'
+gem 'capistrano', '2.15.5'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
