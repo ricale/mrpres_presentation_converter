@@ -24,3 +24,6 @@ config/secrets.yml
 .rvmrc
 
 /public/results
+
+config/database.yml
+public/assets/
