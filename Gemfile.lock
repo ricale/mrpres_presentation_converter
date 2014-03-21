@@ -68,8 +68,8 @@ GEM
     net-ssh (2.8.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    passenger (4.0.40)
-      daemon_controller (>= 1.2.0)
+    passenger (4.0.37)
+      daemon_controller (>= 1.1.0)
       rack
       rake (>= 0.8.1)
     polyglot (0.3.4)
@@ -133,7 +133,7 @@ DEPENDENCIES
   docsplit
   jbuilder (~> 1.2)
   jquery-rails
-  passenger
+  passenger (= 4.0.37)
   rails (= 4.0.0)
   sass-rails (~> 4.0.0)
   sdoc

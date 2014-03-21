@@ -34,7 +34,7 @@ end
 
 gem 'docsplit'
 
-gem 'passenger'
+gem 'passenger', '4.0.37'
 gem 'capistrano', '2.15.5'
 
 # Use ActiveModel has_secure_password
