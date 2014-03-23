@@ -51,6 +51,10 @@ class PresentationsController < ApplicationController
   end
 
   def save_presentation_file(uploaded_file, user_id)
+    unless uploaded_file.original_filename.match(/\.(pdf|odp|ppt|pptx)/)
+      raise "only pdf, odp, ppt, pptx"
+    end
+
     user_id ||= "sample"
     source_file_name = "#{user_id}_#{Time.now.strftime("%Y%m%d%H%M%S")}"
     result_file_path = "#{user_id}/#{Time.now.strftime("%Y%m%d%H%M%S")}"
@@ -59,7 +63,7 @@ class PresentationsController < ApplicationController
       file.write(uploaded_file.read)
     end
 
-    Docsplit.extract_images("tmp/sources/#{source_file_name}",
+    Docsplit.extract_images("#{Rails.root}/tmp/sources/#{source_file_name}",
                             format: [:jpg],
                             output: "public/results/#{result_file_path}")
 
