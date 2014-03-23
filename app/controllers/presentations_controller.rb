@@ -3,13 +3,12 @@ class PresentationsController < ApplicationController
   def show
     converted = ConvertedPresentation.find_by(presentation_id: params[:id])
 
-    root_url = "http://localhost:9000"
     part_of_path = converted.file_name.split("_")
     basic_path = "results/#{part_of_path[0]}/#{part_of_path[1]}"
 
     @images = []
     converted.pages.times do |i|
-      @images << "#{root_url}/#{basic_path}/#{converted.file_name}_#{i+1}.jpg"
+      @images << "#{request.host}/#{basic_path}/#{converted.file_name}_#{i+1}.jpg"
     end
 
     render "show.json.jbuilder"
@@ -50,25 +49,40 @@ class PresentationsController < ApplicationController
     params.require(:presentation).permit(:user_id, :title, :file)
   end
 
-  def save_presentation_file(uploaded_file, user_id)
-    unless uploaded_file.original_filename.match(/\.(pdf|odp|ppt|pptx)/)
-      raise "only pdf, odp, ppt, pptx"
-    end
+  def save_presentation_file(source_file, user_id)
+    raise "Need file." if source_file.nil?
+
+    extention = source_file.original_filename.match(/\.(pdf|odp|ppt|pptx)/).to_s
+
+    raise "Only pdf, odp, ppt, pptx." if extention.blank?
 
     user_id ||= "sample"
-    source_file_name = "#{user_id}_#{Time.now.strftime("%Y%m%d%H%M%S")}"
-    result_file_path = "#{user_id}/#{Time.now.strftime("%Y%m%d%H%M%S")}"
 
-    File.open(Rails.root.join('tmp', 'sources', source_file_name), 'wb') do |file|
-      file.write(uploaded_file.read)
+    timestamp = Time.now.strftime("%Y%m%d%H%M%S")
+    source_file_name = "#{user_id}_#{timestamp}#{extention}"
+    source_file_path = "#{Rails.root}/tmp/sources/#{source_file_name}"
+
+    File.open(source_file_path, 'wb') do |file|
+      file.write(source_file.read)
     end
 
-    Docsplit.extract_images("#{Rails.root}/tmp/sources/#{source_file_name}",
-                            format: [:jpg],
-                            output: "public/results/#{result_file_path}")
+    result_file_path = get_result_file_path(user_id, timestamp)
+    Docsplit.extract_images(source_file_path, format: [:jpg], output: result_file_path)
 
-    pages = Dir[Rails.root.join('public/results/', result_file_path, '*')].count { |file| File.file?(file) }
+    pages = Dir["#{result_file_path}/*"].count
 
     return source_file_name, pages
+  end
+
+  def get_result_file_path(user_id, timestamp)
+    result_file_path = "#{Rails.root}/public/results/#{user_id}"
+    Dir.mkdir(result_file_path) unless File.exists?(result_file_path)
+
+    result_file_path <<= "/#{timestamp}"
+    Dir.mkdir(result_file_path)
+
+    puts result_file_path
+
+    result_file_path
   end
 end
