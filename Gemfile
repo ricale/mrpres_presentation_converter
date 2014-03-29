@@ -37,6 +37,8 @@ gem 'docsplit'
 gem 'passenger', '4.0.37'
 gem 'capistrano', '2.15.5'
 
+gem 'google-api-client'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
