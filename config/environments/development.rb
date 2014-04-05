@@ -27,5 +27,5 @@ PresentationConverter::Application.configure do
   # number of complex assets.
   config.assets.debug = true
 
-  ENV["REDISTOGO_URL"] ||= "redis://localhost:6379"
+  ENV["REDISTOGO_URL"] ||= "redis://127.0.0.1:6379"
 end

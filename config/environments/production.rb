@@ -77,4 +77,6 @@ PresentationConverter::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  ENV["REDISTOGO_URL"] ||= "redis://127.0.0.1:6379"
 end
