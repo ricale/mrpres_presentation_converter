@@ -45,24 +45,33 @@ class PresentationsController < ApplicationController
 
   # GET /presentations/1/status
   def status
-    @converted = ConvertedPresentation.where(presentation_id: params[:id]).first
+    converted = ConvertedPresentation.where(presentation_id: params[:id]).first
 
-    case @converted.status
-    when ConvertedPresentation::COMPLETE
-      @progress = 1.000
+    if converted.nil?
+      @status = nil
+      @progress = nil
+      @message = "Not available Presentation ID"
 
-    when ConvertedPresentation::CONVERTING
-      # FIXME: 유저 인덱스와 timestamp를 얻는 다른 방법 필요
-      # FIXME: 혹은 결과 파일 path를 얻는 다른 방법 필요
-      splited = @converted.file_name.split('_')
-      timestamp = splited.last.split('.').first
-      user_id = splited.first
+    else
+      @status = converted.status
 
-      completed = Dir[Rails.root.join('public/results/', get_result_file_path(user_id, timestamp), '*')].count { |file| File.file?(file) }
-      @progress = (completed.to_f / @converted.pages).round(3)
+      case @status
+      when ConvertedPresentation::COMPLETE
+        @progress = 1.000
 
-    when ConvertedPresentation::FAILED
-      @message = "why?"
+      when ConvertedPresentation::CONVERTING
+        # FIXME: 유저 인덱스와 timestamp를 얻는 다른 방법 필요
+        # FIXME: 혹은 결과 파일 path를 얻는 다른 방법 필요
+        splited = converted.file_name.split('_')
+        timestamp = splited.last.split('.').first
+        user_id = splited.first
+
+        completed = Dir[Rails.root.join('public/results/', get_result_file_path(user_id, timestamp), '*')].count { |file| File.file?(file) }
+        @progress = (completed.to_f / converted.pages).round(3)
+
+      when ConvertedPresentation::FAILED
+        @message = "why?"
+      end
     end
 
     render "status.json.jbuilder"

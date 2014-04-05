@@ -1,3 +1,3 @@
-json.status   @converted.status
+json.status   @status
 json.progress @progress
 json.message  @message
