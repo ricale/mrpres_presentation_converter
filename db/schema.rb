@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140314171341) do
+ActiveRecord::Schema.define(version: 20140405081230) do
 
   create_table "converted_presentations", force: true do |t|
     t.integer  "presentation_id"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20140314171341) do
     t.integer  "pages"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "status"
   end
 
   create_table "presentations", force: true do |t|

@@ -1,5 +1,9 @@
 PresentationConverter::Application.routes.draw do
-  resources :presentations, only: [:new, :show, :create]
+  resources :presentations, only: [:new, :show, :create] do
+    collection do
+      get 'test'
+    end
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
