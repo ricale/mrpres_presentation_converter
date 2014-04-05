@@ -39,7 +39,7 @@ gem 'capistrano', '2.15.5'
 
 gem 'google-api-client'
 
-gem 'resque'
+gem 'resque', :require => 'resque/server'
 gem 'redis'
 
 # Use ActiveModel has_secure_password
