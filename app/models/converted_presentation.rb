@@ -22,6 +22,7 @@ class ConvertedPresentation < ActiveRecord::Base
 
   CONVERTING = 0
   COMPLETE   = 1
+  FAILED     = 2
 
   def default_values
     self.status ||= ConvertedPresentation::CONVERTING

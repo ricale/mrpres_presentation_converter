@@ -43,6 +43,31 @@ class PresentationsController < ApplicationController
     end
   end
 
+  # GET /presentations/1/status
+  def status
+    @converted = ConvertedPresentation.where(presentation_id: params[:id]).first
+
+    case @converted.status
+    when ConvertedPresentation::COMPLETE
+      @progress = 1.000
+
+    when ConvertedPresentation::CONVERTING
+      # FIXME: 유저 인덱스와 timestamp를 얻는 다른 방법 필요
+      # FIXME: 혹은 결과 파일 path를 얻는 다른 방법 필요
+      splited = @converted.file_name.split('_')
+      timestamp = splited.last.split('.').first
+      user_id = splited.first
+
+      completed = Dir[Rails.root.join('public/results/', get_result_file_path(user_id, timestamp), '*')].count { |file| File.file?(file) }
+      @progress = (completed.to_f / @converted.pages).round(3)
+
+    when ConvertedPresentation::FAILED
+      @message = "why?"
+    end
+
+    render "status.json.jbuilder"
+  end
+
   def test
     render text: "test"
   end
@@ -100,5 +125,10 @@ class PresentationsController < ApplicationController
     available_extention = [".pdf", ".odp", ".ppt", ".pptx"]
 
     available_extention.include? extention
+  end
+
+  # duplicated
+  def get_result_file_path(user_id, timestamp)
+    "#{Rails.root}/public/results/#{user_id}/#{timestamp}"
   end
 end

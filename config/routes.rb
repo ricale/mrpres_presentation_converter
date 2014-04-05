@@ -3,6 +3,10 @@ PresentationConverter::Application.routes.draw do
     collection do
       get 'test'
     end
+
+    member do
+      get 'status'
+    end
   end
 
   mount Resque::Server.new, :at => "/resque"
