@@ -14,10 +14,10 @@ class PresentationConversionWorker
     converted.update_attributes!(status: ConvertedPresentation::COMPLETE)
 
   rescue => e
-    logger.info "#{e}"
+    puts "#{e}"
 
   else
-    logger.info "complete PresentationConversionWorker"
+    puts "complete PresentationConversionWorker"
   end
 
   private
