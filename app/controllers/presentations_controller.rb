@@ -1,4 +1,7 @@
 class PresentationsController < ApplicationController
+  before_action :cors
+  skip_before_action :verify_authenticity_token
+
   # GET /presentations/1
   def show
     converted = ConvertedPresentation.find_by(presentation_id: params[:id])
@@ -7,7 +10,7 @@ class PresentationsController < ApplicationController
     basic_path = "results/#{part_of_path[0]}/#{part_of_path[1]}"
 
     @images = []
-    converted.pages.times do |i|
+    converted.total_pages.times do |i|
       @images << "#{request.host}/#{basic_path}/#{converted.file_name}_#{i+1}.jpg"
     end
 
@@ -21,15 +24,14 @@ class PresentationsController < ApplicationController
 
   # POST /presentations
   def create
-    presentation_param = presentation_params
-    @presentation = Presentation.new(presentation_param.except(:file))
-
     begin
+      @presentation = Presentation.find(params[:presentation_id])
+
       ActiveRecord::Base.transaction do
-        user_id   = @presentation.user_id || "Sample"
+        user_id   = @presentation.user_id
         timestamp = Time.now.strftime("%Y%m%d%H%M%S")
 
-        source_file_path = save_presentation_file(presentation_param[:file], user_id, timestamp)
+        source_file_path = save_presentation_file(params[:file], user_id, timestamp)
 
         @presentation.save!
 
@@ -67,7 +69,7 @@ class PresentationsController < ApplicationController
         user_id = splited.first
 
         completed = Dir[Rails.root.join('public/results/', get_result_file_path(user_id, timestamp), '*')].count { |file| File.file?(file) }
-        @progress = (completed.to_f / converted.pages).round(3)
+        @progress = (completed.to_f / converted.total_pages).round(3)
 
       when ConvertedPresentation::FAILED
         @message = "why?"
@@ -85,9 +87,11 @@ class PresentationsController < ApplicationController
 
   private
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def presentation_params
-    params.require(:presentation).permit(:user_id, :title, :file)
+  def cors
+    headers['Access-Control-Allow-Origin'] = 'http://enterkey.kr'
+    headers['Access-Control-Allow-Methods'] = 'POST, PUT, DELETE, GET, OPTIONS'
+    headers['Access-Control-Request-Method'] = '*'
+    headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   end
 
   def save_presentation_file(source_file, user_id, timestamp)

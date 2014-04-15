@@ -11,22 +11,44 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140405081230) do
+ActiveRecord::Schema.define(version: 20140415140538) do
+
+  create_table "broadcasts", force: true do |t|
+    t.integer   "user_id",         null: false
+    t.integer   "presentation_id", null: false
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+  end
 
   create_table "converted_presentations", force: true do |t|
-    t.integer  "presentation_id"
-    t.string   "file_name"
-    t.integer  "pages"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "status"
+    t.integer   "presentation_id",             null: false
+    t.string    "file_name",                   null: false
+    t.integer   "total_pages",     default: 0
+    t.integer   "status"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
 
   create_table "presentations", force: true do |t|
-    t.integer  "user_id"
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer   "user_id",     null: false
+    t.string    "title",       null: false
+    t.text      "description"
+    t.integer   "status"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
   end
+
+  create_table "users", force: true do |t|
+    t.string    "email",         null: false
+    t.string    "password",      null: false
+    t.string    "name",          null: false
+    t.string    "access_token"
+    t.string    "refresh_token"
+    t.string    "expire_in"
+    t.timestamp "created_at"
+    t.timestamp "updated_at"
+  end
+
+  add_index "users", ["email"], name: "id_UNIQUE", unique: true, using: :btree
 
 end

@@ -4,10 +4,10 @@ class PresentationConversionWorker
   @queue = :presentation_queue 
   def self.perform(source_file_path, user_id, presentation_id, timestamp)
     pages = Docsplit.extract_length(source_file_path)
-    file_name = source_file_path.split('/').last
+    file_name = source_file_path.split('/').last.split(".").first
     converted = ConvertedPresentation.create!(presentation_id: presentation_id,
                                               file_name: file_name,
-                                              pages: pages)
+                                              total_pages: pages)
 
     convert_presentation(user_id, timestamp, source_file_path)
 
