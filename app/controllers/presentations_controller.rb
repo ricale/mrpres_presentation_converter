@@ -2,26 +2,6 @@ class PresentationsController < ApplicationController
   before_action :cors
   skip_before_action :verify_authenticity_token
 
-  # GET /presentations/1
-  def show
-    converted = ConvertedPresentation.find_by(presentation_id: params[:id])
-
-    part_of_path = converted.file_name.split("_")
-    basic_path = "results/#{part_of_path[0]}/#{part_of_path[1]}"
-
-    @images = []
-    converted.total_pages.times do |i|
-      @images << "#{request.host}/#{basic_path}/#{converted.file_name}_#{i+1}.jpg"
-    end
-
-    render "show.json.jbuilder"
-  end
-
-  # GET /presentations/new
-  def new
-    @presentation = Presentation.new
-  end
-
   # POST /presentations
   def create
     begin
@@ -31,16 +11,18 @@ class PresentationsController < ApplicationController
         user_id   = @presentation.user_id
         timestamp = Time.now.strftime("%Y%m%d%H%M%S")
 
-        source_file_path = save_presentation_file(params[:file], user_id, timestamp)
+        source_file_path = save_presentation_file(params[:file], user_id, params[:presentation_id], timestamp)
 
         @presentation.save!
 
         Resque.enqueue(PresentationConversionWorker, source_file_path, user_id, @presentation.id, timestamp)
       end
     rescue
-      @error = $!.to_s
+      @success = false
+      @error   = $!.to_s
       render "fail.json.jbuilder"
     else
+      @success = true
       render "create.json.jbuilder"
     end
   end
@@ -79,11 +61,6 @@ class PresentationsController < ApplicationController
     render "status.json.jbuilder"
   end
 
-  def test
-    render text: "test"
-  end
-
-
 
   private
 
@@ -94,14 +71,17 @@ class PresentationsController < ApplicationController
     headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   end
 
-  def save_presentation_file(source_file, user_id, timestamp)
+  def save_presentation_file(source_file, user_id, presentation_id, timestamp)
     raise "Need file." if source_file.nil?
 
-    extention = source_file.original_filename.match(/\.[^\.]+$/).to_s
+    content_type = source_file.content_type
+    extention    = source_file.original_filename.match(/\.[^\.]+$/).to_s
 
-    unless (available_file_content_type(source_file.content_type) and available_file_extention(extention))
+    unless (available_file_content_type(content_type) and available_file_extention(extention))
       raise "Only pdf, odp, ppt, pptx."
     end
+
+    $redis.set("presentation_mime_type:#{presentation_id}", content_type)
 
     source_file_path = "#{Rails.root}/tmp/sources/#{user_id}_#{timestamp}#{extention}"
 

@@ -2,11 +2,13 @@
 #
 # Table name: presentations
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
-#  title      :string(255)
-#  created_at :datetime
-#  updated_at :datetime
+#  id          :integer          not null, primary key
+#  user_id     :integer          not null
+#  title       :string(255)      not null
+#  description :text
+#  status      :integer
+#  created_at  :datetime
+#  updated_at  :datetime
 #
 
 class Presentation < ActiveRecord::Base

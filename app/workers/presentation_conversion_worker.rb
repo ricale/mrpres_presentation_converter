@@ -1,4 +1,5 @@
 require 'resque'
+require 'google/api_client'
 
 class PresentationConversionWorker
   @queue = :presentation_queue 
@@ -13,11 +14,14 @@ class PresentationConversionWorker
 
     converted.update_attributes!(status: ConvertedPresentation::COMPLETE)
 
+    upload_source_file_to_google_drive(user_id, presentation_id, source_file_path)
+
   rescue => e
-    puts "#{e}"
+    puts "#{e.inspect} #{e.backtrace.first}"
 
   else
     puts "complete PresentationConversionWorker"
+    $redis.del("presentation_mime_type:#{presentation_id}")
   end
 
   private
@@ -29,39 +33,46 @@ class PresentationConversionWorker
 
   # 유저 모델이 구현되면 수정 필요
   # 현재는 돌아가지 않는 코드
-  def self.upload_source_file_to_google_drive(user_id, title, file_path, content_type)
-    # user = User.find(user_id)
-    # access_token  = user.access_token
-    # refresh_token = user.refresh_token
-    # expires_in    = user.expires_in
+  def self.upload_source_file_to_google_drive(user_id, presentation_id, file_path)
+    user = User.find(user_id)
+    access_token  = user.access_token
+    refresh_token = user.refresh_token
+    expires_in    = user.expires_in
+
+    return if user.access_token.nil?
+
+    title = Presentation.find(presentation_id).title
 
     client = Google::APIClient.new
     client.authorization.update_token!({
-      access_token: access_token,
+      access_token:  access_token,
       refresh_token: refresh_token,
-      expires_in: expires_in
+      expires_in:    expires_in
     })
 
     client.authorization.fetch_access_token! if client.authorization.refresh_token && client.authorization.expired?
 
-    drive = client.discovered_api('drive', 'v2')
+    content_type = $redis.get("presentation_mime_type:#{presentation_id}")
 
-    file = drive.files.insert.request_schema.new({
-      'title' => title,
+    drive = client.discovered_api('drive', 'v2')
+    file  = drive.files.insert.request_schema.new({
+      'title'       => title,
       'description' => '',
-      'mimeType' => content_type
+      'mimeType'    => content_type
     })
 
-    media = Google::APIClient::UploadIO.new(file_path, content_type)
+    media  = Google::APIClient::UploadIO.new(file_path, content_type)
     result = client.execute(
-      :api_method => drive.files.insert,
-      :body_object => file,
-      :media => media,
-      :parameters => {
+      api_method:  drive.files.insert,
+      body_object: file,
+      media:       media,
+      parameters: {
         'uploadType' => 'multipart',
         'alt' => 'json'
       }
     )
+
+    puts result.data.to_hash
   end
 
   def self.get_result_file_path(user_id, timestamp)

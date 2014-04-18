@@ -44,7 +44,7 @@ ActiveRecord::Schema.define(version: 20140415140538) do
     t.string    "name",          null: false
     t.string    "access_token"
     t.string    "refresh_token"
-    t.string    "expire_in"
+    t.string    "expires_in"
     t.timestamp "created_at"
     t.timestamp "updated_at"
   end
