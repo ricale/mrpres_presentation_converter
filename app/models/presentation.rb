@@ -13,4 +13,8 @@
 
 class Presentation < ActiveRecord::Base
   has_one :converted_presentation
+
+  CONVERTING = 0
+  COMPLETE   = 1
+  FAILED     = 2
 end

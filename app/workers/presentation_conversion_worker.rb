@@ -13,6 +13,7 @@ class PresentationConversionWorker
     convert_presentation(user_id, timestamp, source_file_path)
 
     converted.update_attributes!(status: ConvertedPresentation::COMPLETE)
+    Presentation.find(presentation_id).update_attributes!(status: Presentation::COMPLETE)
 
     upload_source_file_to_google_drive(user_id, presentation_id, source_file_path)
 
