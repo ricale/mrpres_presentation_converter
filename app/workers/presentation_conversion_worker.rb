@@ -59,7 +59,8 @@ class PresentationConversionWorker
     file  = drive.files.insert.request_schema.new({
       'title'       => title,
       'description' => '',
-      'mimeType'    => content_type
+      'mimeType'    => content_type,
+      'parents'     => ['mrpres']
     })
 
     media  = Google::APIClient::UploadIO.new(file_path, content_type)

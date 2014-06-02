@@ -29,7 +29,7 @@ class PresentationsController < ApplicationController
 
   # GET /presentations/1/status
   def status
-    converted = ConvertedPresentation.where(presentation_id: params[:id]).first
+    converted = ConvertedPresentation.where(presentation_id: params[:id]).last
 
     if converted.nil?
       @status = nil
