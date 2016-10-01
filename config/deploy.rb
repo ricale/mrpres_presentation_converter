@@ -1,30 +1,21 @@
+lock '3.6.0'
+
 set :application, "mrpres_converter"
-set :repository,  "git@github.com:ricale/mrpres_presentation_converter.git"
+set :repo_url,  "https://github.com/ricale/mrpres_presentation_converter.git"
 
-set :scm, :git
+set :rvm_type, :system
 
-set :user, 'root'
-# Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
+set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
 
-role :web, "ricalest.net"                          # Your HTTP server, Apache/etc
-role :app, "ricalest.net"                          # This may be the same as your `Web` server
-role :db,  "ricalest.net", :primary => true # This is where Rails migrations will run
-# role :db,  "your slave db-server here"
-
-# if you want to clean up old releases on each deploy uncomment this:
-# after "deploy:restart", "deploy:cleanup"
-
-# if you're still using the script/reaper helper you will need
-# these http://github.com/rails/irs_process_scripts
-
-# If you are using Passenger mod_rails uncomment this:
 namespace :deploy do
-  task :start do ; end
-  task :stop do ; end
-  task :restart, :roles => :app, :except => { :no_release => true } do
-    run "#{try_sudo} touch #{File.join(current_path,'tmp','restart.txt')}"
-  end
-end
 
-ssh_options[:forward_agent] = true
-default_run_options[:pty] = true
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
+  end
+
+end

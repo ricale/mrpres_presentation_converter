@@ -9,9 +9,9 @@ gem 'mysql2'
 # Use SCSS for stylesheets
 # Use Uglifier as compressor for JavaScript assets
 # Use CoffeeScript for .js.coffee assets and views
-gem 'sass-rails', '~> 4.0.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.0.0'
+# gem 'sass-rails', '~> 4.0.0'
+# gem 'uglifier', '>= 1.3.0'
+# gem 'coffee-rails', '~> 4.0.0'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
@@ -19,13 +19,13 @@ gem 'coffee-rails', '~> 4.0.0'
 # Use jquery as the JavaScript library
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jquery-rails'
-gem 'turbolinks'
-gem 'jbuilder', '~> 1.2'
+# gem 'jquery-rails'
+# gem 'turbolinks'
+# gem 'jbuilder', '~> 1.2'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
+  # gem 'sdoc', require: false
 end
 
 group :development do
@@ -34,8 +34,15 @@ end
 
 gem 'docsplit'
 
-gem 'passenger', '4.0.37'
-gem 'capistrano'
+# gem 'passenger', '4.0.37'
+
+group :development do
+  gem 'capistrano', '~> 3.1'
+  gem 'capistrano-rvm'
+  gem 'capistrano-rails', '~> 1.1'
+  gem 'capistrano-passenger'
+  gem 'capistrano-npm'
+end
 
 gem 'google-api-client'
 

@@ -1,0 +1,1 @@
+server 'ricalest.net', user: 'deploy', roles: %w{app db web}
