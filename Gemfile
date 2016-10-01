@@ -35,7 +35,7 @@ end
 gem 'docsplit'
 
 gem 'passenger', '4.0.37'
-gem 'capistrano', '2.15.5'
+gem 'capistrano'
 
 gem 'google-api-client'
 
