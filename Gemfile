@@ -4,7 +4,8 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.0'
 
 # db
-gem 'mysql2'
+# gem 'mysql2'
+gem 'mysql2', '~> 0.3.18'
 
 # Use SCSS for stylesheets
 # Use Uglifier as compressor for JavaScript assets
