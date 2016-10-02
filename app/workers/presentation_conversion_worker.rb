@@ -1,5 +1,5 @@
 require 'resque'
-require 'google/api_client'
+require 'google/apis/drive_v2'
 
 class PresentationConversionWorker
   @queue = :presentation_queue 

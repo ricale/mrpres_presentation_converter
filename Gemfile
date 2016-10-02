@@ -45,7 +45,7 @@ group :development do
   gem 'capistrano-npm'
 end
 
-gem 'google-api-client'
+gem 'google-api-client', '~> 0.9'
 
 gem 'resque', :require => 'resque/server'
 gem 'redis'

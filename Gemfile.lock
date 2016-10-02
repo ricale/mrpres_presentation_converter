@@ -172,7 +172,7 @@ DEPENDENCIES
   capistrano-rails (~> 1.1)
   capistrano-rvm
   docsplit
-  google-api-client
+  google-api-client (~> 0.9)
   mysql2 (~> 0.3.18)
   rails (= 4.0.0)
   redis
