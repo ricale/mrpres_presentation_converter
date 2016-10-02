@@ -1,4 +1,4 @@
-lock '3.6.0'
+# lock '3.6.0'
 
 set :application, "mrpres_converter"
 set :repo_url,  "https://github.com/ricale/mrpres_presentation_converter.git"
